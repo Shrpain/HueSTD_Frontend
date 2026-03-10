@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Mail, Lock, User, GraduationCap, ArrowRight, Github, Chrome } from 'lucide-react';
 import api from '../services/api';
+import { supabase } from '../services/supabase';
 import { useAuth } from '../context/AuthContext';
 
 interface AuthModuleProps {
@@ -47,6 +48,31 @@ const AuthModule: React.FC<AuthModuleProps> = ({ onClose, onLoginSuccess }) => {
     } catch (err: any) {
       console.error(err);
       setError(err.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const redirectTo = `${window.location.origin}${window.location.pathname || '/'}`;
+      const { data, error: oauthError } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo },
+      });
+      if (oauthError) {
+        setError(oauthError.message || 'Đăng nhập Google thất bại.');
+        setLoading(false);
+        return;
+      }
+      if (data?.url) {
+        window.location.href = data.url;
+        return;
+      }
+    } catch (err: any) {
+      setError(err?.message || 'Có lỗi xảy ra. Vui lòng thử lại.');
     } finally {
       setLoading(false);
     }
@@ -178,11 +204,20 @@ const AuthModule: React.FC<AuthModuleProps> = ({ onClose, onLoginSuccess }) => {
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <button className="flex items-center justify-center gap-2 py-3 px-4 bg-slate-50 hover:bg-slate-100 border border-slate-100 rounded-2xl transition-all font-bold text-sm text-slate-700 active:scale-95">
+              <button
+                type="button"
+                onClick={handleGoogleLogin}
+                disabled={loading}
+                className="flex items-center justify-center gap-2 py-3 px-4 bg-slate-50 hover:bg-slate-100 border border-slate-100 rounded-2xl transition-all font-bold text-sm text-slate-700 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
+              >
                 <Chrome size={18} className="text-red-500" />
                 Google
               </button>
-              <button className="flex items-center justify-center gap-2 py-3 px-4 bg-slate-50 hover:bg-slate-100 border border-slate-100 rounded-2xl transition-all font-bold text-sm text-slate-700 active:scale-95">
+              <button
+                type="button"
+                className="flex items-center justify-center gap-2 py-3 px-4 bg-slate-50 hover:bg-slate-100 border border-slate-100 rounded-2xl transition-all font-bold text-sm text-slate-700 active:scale-95 opacity-60 cursor-not-allowed"
+                title="Sắp ra mắt"
+              >
                 <Github size={18} className="text-slate-900" />
                 Github
               </button>

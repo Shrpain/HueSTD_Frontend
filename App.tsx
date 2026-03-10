@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ToastProvider, useToast } from './components/Toast';
 import { AppTab, User } from './types';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
@@ -9,6 +10,38 @@ import AdminModule from './components/AdminModule';
 import AdminLayout from './components/admin/AdminLayout';
 import ProfileModule from './components/ProfileModule';
 import AuthModule from './components/AuthModule';
+
+// Lắng nghe sự kiện auth-toast (sau đăng nhập Google) và xử lý lỗi OAuth từ URL
+const AuthToastListener: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { showToast } = useToast();
+  useEffect(() => {
+    const handler = (e: CustomEvent<{ type: 'success' | 'error'; title: string; message: string }>) => {
+      const { type, title, message } = e.detail || {};
+      if (type && title && message) {
+        showToast({ type, title, message, duration: 5000 });
+      }
+    };
+    window.addEventListener('auth-toast', handler as EventListener);
+    return () => window.removeEventListener('auth-toast', handler as EventListener);
+  }, [showToast]);
+
+  // Khi redirect về với ?error=... (OAuth thất bại) → hiện toast và xóa query
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const error = params.get('error');
+    const errorDescription = params.get('error_description') || '';
+    if (error) {
+      const msg =
+        error === 'server_error' && errorDescription.includes('exchange')
+          ? 'Supabase không trao đổi mã với Google. Kiểm tra:\n• Google Cloud: Redirect URI = https://oubkbvypiabgfulnhsnd.supabase.co/auth/v1/callback\n• Supabase: Client ID và Client Secret đúng chưa.'
+          : decodeURIComponent(errorDescription || 'Đăng nhập thất bại.');
+      showToast({ type: 'error', title: 'Lỗi đăng nhập', message: msg, duration: 8000 });
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, [showToast]);
+
+  return <>{children}</>;
+};
 
 // Helper function to convert AuthContext user to types.ts User format
 const mapAuthUserToUser = (authUser: any): User | null => {
@@ -144,12 +177,16 @@ const AppContent: React.FC = () => {
   );
 };
 
-// Main App wrapper with AuthProvider
+// Main App wrapper with ToastProvider + AuthProvider + AuthToastListener
 const App: React.FC = () => {
   return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
+    <ToastProvider>
+      <AuthProvider>
+        <AuthToastListener>
+          <AppContent />
+        </AuthToastListener>
+      </AuthProvider>
+    </ToastProvider>
   );
 };
 

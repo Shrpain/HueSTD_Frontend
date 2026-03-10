@@ -2,7 +2,11 @@
 import axios from 'axios';
 import { supabase } from './supabase';
 
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://36.50.55.100:5000/api';
+// Expect VITE_API_BASE_URL already includes path prefix when needed.
+// Examples:
+// - Local/preview with proxy: VITE_API_BASE_URL=/api
+// - Direct backend: VITE_API_BASE_URL=http://localhost:5136/api
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '';
 
 const api = axios.create({
   baseURL: apiBaseUrl,

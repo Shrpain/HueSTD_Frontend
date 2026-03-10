@@ -8,11 +8,21 @@ export default defineConfig(({ mode }) => {
       server: {
         port: 3000,
         host: '0.0.0.0',
+        // Local dev: forward /api/* to backend to avoid CORS
+        proxy: {
+          '/api': {
+            target: 'http://localhost:5136',
+            changeOrigin: true,
+          },
+        },
       },
       plugins: [react()],
       define: {
-        'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-        'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
+        'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY || ''),
+        'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY || ''),
+        'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(env.VITE_SUPABASE_URL || 'https://oubkbvypiabgfulnhsnd.supabase.co'),
+        'import.meta.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91YmtidnlwaWFiZ2Z1bG5oc25kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk2MDMwMzYsImV4cCI6MjA4NTE3OTAzNn0.iibCCC5PfRnNAuYGsh2s5O-V5vbfFpAB-QCBo1E0-s0'),
+        'import.meta.env.VITE_API_BASE_URL': JSON.stringify(env.VITE_API_BASE_URL || 'http://localhost:5136'),
       },
       resolve: {
         alias: {

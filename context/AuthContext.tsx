@@ -67,7 +67,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 console.error("Failed to parse user", e);
                 logout();
             }
+            return;
         }
+        // After OAuth redirect: Supabase has session but we don't have token in localStorage yet
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            console.log('[AuthContext] getSession result:', session ? 'has session, user: ' + session.user?.email : 'no session');
+            if (session && !localStorage.getItem('accessToken')) {
+                localStorage.setItem('accessToken', session.access_token);
+                localStorage.setItem('refreshToken', session.refresh_token ?? '');
+                console.log('[AuthContext] Calling /Auth/me with token:', session.access_token.substring(0, 20) + '...');
+                api.get('/Auth/me', { headers: { Authorization: `Bearer ${session.access_token}` } })
+                    .then((res) => {
+                        console.log('[AuthContext] /Auth/me SUCCESS:', res.data);
+                        const u = res.data;
+                        setUser(u);
+                        localStorage.setItem('user', JSON.stringify(u));
+                        window.dispatchEvent(new CustomEvent('auth-toast', {
+                            detail: { type: 'success', title: 'Đăng nhập thành công', message: 'Chào mừng bạn trở lại!' }
+                        }));
+                    })
+                    .catch((err) => {
+                        console.error('[AuthContext] /Auth/me FAILED:', err.response?.data || err.message);
+                        supabase.auth.signOut();
+                        localStorage.removeItem('accessToken');
+                        localStorage.removeItem('refreshToken');
+                        localStorage.removeItem('user');
+                        const msg = err.response?.data?.message || err.message || 'Không thể lấy thông tin tài khoản. Vui lòng thử lại.';
+                        window.dispatchEvent(new CustomEvent('auth-toast', {
+                            detail: { type: 'error', title: 'Đăng nhập thất bại', message: msg }
+                        }));
+                    });
+            } else {
+                console.log('[AuthContext] No session or token already exists');
+            }
+        });
     }, []);
 
     // Realtime subscription for profile changes (points, etc.)
@@ -117,6 +150,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('user');
         setUser(null);
+        supabase.auth.signOut().catch(() => {});
     };
 
     const updateUser = async (data: UpdateProfileData): Promise<boolean> => {

@@ -41,7 +41,7 @@ const Toast: React.FC<ToastProps> = ({ id, title, message, type = 'info', durati
       <span className="text-xl flex-shrink-0">{typeIcons[type]}</span>
       <div className="flex-1 min-w-0">
         <p className="font-semibold text-sm">{title}</p>
-        <p className="text-xs opacity-90 mt-0.5 line-clamp-2">{message}</p>
+        <p className="text-xs opacity-90 mt-0.5 break-words whitespace-pre-wrap">{message}</p>
       </div>
       <button
         onClick={() => onClose(id)}
