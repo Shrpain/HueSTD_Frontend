@@ -2,7 +2,7 @@
 import axios from 'axios';
 import { supabase } from './supabase';
 
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://36.50.55.100:5000/api';
+const apiBaseUrl = 'http://36.50.55.100:5000/api';
 
 const api = axios.create({
   baseURL: apiBaseUrl,
