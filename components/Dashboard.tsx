@@ -124,23 +124,23 @@ const Dashboard: React.FC<DashboardProps> = ({ setActiveTab }) => {
   ];
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
-      <section className="bg-gradient-to-r from-teal-600 to-emerald-600 rounded-3xl p-8 text-white shadow-xl shadow-teal-100 relative overflow-hidden group transition-all duration-500 hover:shadow-2xl hover:shadow-teal-200">
+    <div className="space-y-6 md:space-y-8 animate-in fade-in duration-500">
+      <section className="bg-gradient-to-r from-teal-600 to-emerald-600 rounded-2xl md:rounded-3xl p-5 md:p-8 text-white shadow-xl shadow-teal-100 relative overflow-hidden group transition-all duration-500 hover:shadow-2xl hover:shadow-teal-200">
         <div className="relative z-10">
-          <h1 className="text-3xl font-bold mb-2 transition-all duration-300 group-hover:translate-x-2">Chào mừng trở lại!</h1>
-          <p className="opacity-90 max-w-lg transition-opacity duration-300 group-hover:opacity-100">
+          <h1 className="text-2xl md:text-3xl font-bold mb-2 transition-all duration-300 group-hover:translate-x-2 text-balance">Chào mừng trở lại!</h1>
+          <p className="text-sm md:text-base opacity-90 max-w-lg transition-opacity duration-300 group-hover:opacity-100 text-pretty leading-relaxed">
             HueSTD là nơi kết nối hàng nghìn sinh viên tại Thừa Thiên Huế. Chia sẻ tài liệu của bạn để nhận điểm thưởng và hỗ trợ cộng đồng.
           </p>
-          <div className="mt-8 flex flex-wrap gap-4">
+          <div className="mt-5 md:mt-8 flex flex-wrap gap-3 md:gap-4">
             <button
               onClick={() => setActiveTab(AppTab.DOCUMENTS)}
-              className="bg-white text-teal-700 px-6 py-2.5 rounded-xl font-bold hover:bg-slate-100 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1 active:scale-95"
+              className="bg-white text-teal-700 px-5 md:px-6 py-2.5 rounded-xl text-sm md:text-base font-bold hover:bg-slate-100 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1 active:scale-95"
             >
               Tìm tài liệu ngay
             </button>
             <button
               onClick={() => setActiveTab(AppTab.DOCUMENTS)}
-              className="bg-teal-500/30 backdrop-blur-md border border-white/30 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-teal-500/50 transition-all duration-300 hover:scale-105 active:scale-95"
+              className="bg-teal-500/30 backdrop-blur-md border border-white/30 text-white px-5 md:px-6 py-2.5 rounded-xl text-sm md:text-base font-bold hover:bg-teal-500/50 transition-all duration-300 hover:scale-105 active:scale-95"
             >
               Xem tài liệu
             </button>
@@ -150,27 +150,27 @@ const Dashboard: React.FC<DashboardProps> = ({ setActiveTab }) => {
         <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-white/10 rounded-full blur-3xl transition-all duration-700 group-hover:scale-150"></div>
       </section>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
         {statsList.map((stat, idx) => (
-          <div key={idx} className="bg-white p-6 rounded-2xl border shadow-sm flex items-center justify-between hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-default group">
-            <div className="group-hover:text-teal-600 transition-colors duration-300">
-              <p className="text-slate-500 text-sm font-medium">{stat.label}</p>
-              <h3 className="text-2xl font-bold text-slate-800 group-hover:text-teal-600 transition-colors duration-300">
-                {loading ? <div className="h-8 w-16 bg-slate-100 animate-pulse rounded"></div> : stat.value}
+          <div key={idx} className="bg-white p-4 md:p-6 rounded-2xl border shadow-sm flex items-center justify-between gap-2 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-default group">
+            <div className="min-w-0 group-hover:text-teal-600 transition-colors duration-300">
+              <p className="text-slate-500 text-xs md:text-sm font-medium truncate">{stat.label}</p>
+              <h3 className="text-lg md:text-2xl font-bold text-slate-800 group-hover:text-teal-600 transition-colors duration-300">
+                {loading ? <div className="h-6 md:h-8 w-12 md:w-16 bg-slate-100 animate-pulse rounded"></div> : stat.value}
               </h3>
             </div>
-            <div className={`p-3 rounded-xl ${stat.color} group-hover:scale-110 transition-transform duration-300`}>{stat.icon}</div>
+            <div className={`p-2 md:p-3 rounded-xl ${stat.color} group-hover:scale-110 transition-transform duration-300 shrink-0`}>{stat.icon}</div>
           </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+        <div className="lg:col-span-2 space-y-4 md:space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-slate-800">Tài liệu HOT tuần này</h2>
+            <h2 className="text-lg md:text-xl font-bold text-slate-800">Tài liệu HOT tuần này</h2>
             <button
               onClick={() => setActiveTab(AppTab.DOCUMENTS)}
-              className="text-teal-600 text-sm font-semibold hover:underline"
+              className="text-teal-600 text-xs md:text-sm font-semibold hover:underline"
             >
               Xem tất cả
             </button>
@@ -211,8 +211,8 @@ const Dashboard: React.FC<DashboardProps> = ({ setActiveTab }) => {
           </div>
         </div>
 
-        <div className="space-y-6">
-          <h2 className="text-xl font-bold text-slate-800">Bảng xếp hạng đóng góp</h2>
+        <div className="space-y-4 md:space-y-6">
+          <h2 className="text-lg md:text-xl font-bold text-slate-800">Bảng xếp hạng đóng góp</h2>
           <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
             {loading ? (
               <div className="p-8 flex flex-col items-center justify-center text-slate-400">

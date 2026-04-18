@@ -306,36 +306,37 @@ const DocumentModule: React.FC<DocumentModuleProps> = ({ onRequireLogin }) => {
   const uniqueSchools = ['Tất cả', ...new Set(documents.map((d) => d.school).filter(Boolean))];
 
   return (
-    <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="space-y-4 md:space-y-6 animate-in slide-in-from-bottom-4 duration-500">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 md:gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Tài liệu & Đề thi</h1>
-          <p className="text-slate-500 text-sm">Tìm kiếm hàng nghìn tài liệu học tập chất lượng tại Huế</p>
+          <h1 className="text-xl md:text-2xl font-bold text-slate-800">Tài liệu & Đề thi</h1>
+          <p className="text-slate-500 text-xs md:text-sm">Tìm kiếm hàng nghìn tài liệu học tập chất lượng tại Huế</p>
         </div>
         <button
           onClick={() => setShowUpload(true)}
-          className="bg-teal-600 text-white px-5 py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-teal-700 transition-all shadow-lg shadow-teal-100"
+          className="bg-teal-600 text-white px-4 md:px-5 py-2.5 rounded-xl text-sm md:text-base font-bold flex items-center justify-center gap-2 hover:bg-teal-700 transition-all shadow-lg shadow-teal-100 active:scale-95"
         >
           <Upload size={18} />
-          Đóng góp tài liệu
+          <span className="hidden xs:inline">Đóng góp tài liệu</span>
+          <span className="xs:hidden">Đóng góp</span>
         </button>
       </div>
 
       {/* Filters */}
-      <div className="bg-white p-4 rounded-2xl border shadow-sm space-y-4">
-        <div className="flex flex-wrap gap-2">
+      <div className="bg-white p-3 md:p-4 rounded-2xl border shadow-sm space-y-3 md:space-y-4">
+        <div className="flex gap-2 overflow-x-auto scrollbar-hide -mx-1 px-1 pb-1">
           {['Tất cả', ...Object.values(DocumentType)].map((type) => (
             <button
               key={type}
               onClick={() => setActiveType(type)}
-              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${activeType === type ? 'bg-teal-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              className={`px-3 md:px-4 py-1.5 rounded-full text-xs md:text-sm font-medium transition-all whitespace-nowrap shrink-0 ${activeType === type ? 'bg-teal-600 text-white shadow-md shadow-teal-100' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                 }`}
             >
               {type}
             </button>
           ))}
         </div>
-        <div className="flex flex-col md:flex-row gap-4">
+        <div className="flex flex-col md:flex-row gap-2 md:gap-4">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
             <input
@@ -360,57 +361,106 @@ const DocumentModule: React.FC<DocumentModuleProps> = ({ onRequireLogin }) => {
         </div>
       </div>
 
-      {/* Documents Table */}
+      {/* Documents List */}
       <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
         {filteredDocuments.length === 0 ? (
-          <div className="text-center py-12 text-slate-400">Không tìm thấy tài liệu nào</div>
+          <div className="text-center py-12 text-slate-400 text-sm">Không tìm thấy tài liệu nào</div>
         ) : (
           <>
             {/* Pagination - Top */}
-            <div className="px-6 py-4 border-b flex items-center justify-between">
-              <div className="text-sm text-slate-500">
-                Hiển thị {startIndex + 1}-{Math.min(endIndex, filteredDocuments.length)} của {filteredDocuments.length} tài liệu
+            <div className="px-4 md:px-6 py-3 md:py-4 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div className="text-xs md:text-sm text-slate-500">
+                <span className="hidden sm:inline">Hiển thị </span>{startIndex + 1}-{Math.min(endIndex, filteredDocuments.length)} / {filteredDocuments.length} tài liệu
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 md:gap-2">
                 <button
                   onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
-                  className="px-3 py-1.5 text-sm rounded-lg border hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-1"
+                  aria-label="Trang trước"
+                  className="px-2 md:px-3 py-1.5 text-xs md:text-sm rounded-lg border hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-1"
                 >
                   <ChevronLeft size={16} />
-                  Trước
+                  <span className="hidden sm:inline">Trước</span>
                 </button>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                  <button
-                    key={page}
-                    onClick={() => setCurrentPage(page)}
-                    className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
-                      currentPage === page
-                        ? 'bg-teal-600 text-white'
-                        : 'border hover:bg-slate-50'
-                    }`}
-                  >
-                    {page}
-                  </button>
-                ))}
+                {/* Page numbers - compact on mobile */}
+                <div className="hidden sm:flex items-center gap-1">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <button
+                      key={page}
+                      onClick={() => setCurrentPage(page)}
+                      className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                        currentPage === page
+                          ? 'bg-teal-600 text-white'
+                          : 'border hover:bg-slate-50'
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  ))}
+                </div>
+                <span className="sm:hidden text-xs font-bold text-slate-600 px-2">
+                  {currentPage} / {totalPages}
+                </span>
                 <button
                   onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages}
-                  className="px-3 py-1.5 text-sm rounded-lg border hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-1"
+                  aria-label="Trang sau"
+                  className="px-2 md:px-3 py-1.5 text-xs md:text-sm rounded-lg border hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-1"
                 >
-                  Sau
+                  <span className="hidden sm:inline">Sau</span>
                   <ChevronRight size={16} />
                 </button>
               </div>
             </div>
 
-            <div className="overflow-x-auto">
+            {/* Mobile Card View */}
+            <div className="md:hidden divide-y">
+              {paginatedDocuments.map((doc) => (
+                <button
+                  key={doc.id}
+                  onClick={() => {
+                    setSelectedDoc(doc);
+                    setShowAIChat(false);
+                    setExtractedText('');
+                    handleViewDocument(doc);
+                  }}
+                  className="w-full text-left p-4 hover:bg-slate-50/80 active:bg-slate-100 transition-colors flex items-start gap-3"
+                >
+                  <div className="w-11 h-11 bg-teal-50 text-teal-600 rounded-xl flex items-center justify-center shrink-0">
+                    <FileText size={20} />
+                  </div>
+                  <div className="flex-1 min-w-0 space-y-1.5">
+                    <p className="text-sm font-bold text-slate-800 line-clamp-2 leading-snug">{doc.title}</p>
+                    <p className="text-xs text-slate-500 line-clamp-1">
+                      {doc.subject} • {doc.type}
+                    </p>
+                    <div className="flex items-center gap-2 flex-wrap pt-0.5">
+                      <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md line-clamp-1 max-w-[150px]">
+                        {doc.school}
+                      </span>
+                      <span className="flex items-center gap-1 bg-blue-50 px-1.5 py-0.5 rounded-md">
+                        <Eye size={10} className="text-blue-500" />
+                        <span className="text-[10px] font-bold text-blue-700">{doc.views?.toLocaleString() || 0}</span>
+                      </span>
+                      <span className="flex items-center gap-1 bg-emerald-50 px-1.5 py-0.5 rounded-md">
+                        <Download size={10} className="text-emerald-500" />
+                        <span className="text-[10px] font-bold text-emerald-700">{doc.downloads?.toLocaleString() || 0}</span>
+                      </span>
+                    </div>
+                  </div>
+                  <ChevronRight size={18} className="text-slate-300 shrink-0 mt-1" />
+                </button>
+              ))}
+            </div>
+
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left">
                 <thead className="bg-slate-50 border-b">
                   <tr>
                     <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Tài liệu</th>
                     <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Trường</th>
-                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase hidden md:table-cell">Người đăng</th>
+                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase hidden lg:table-cell">Người đăng</th>
                     <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase text-center">Thống kê</th>
                     <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase text-right">Hành động</th>
                   </tr>
@@ -419,7 +469,7 @@ const DocumentModule: React.FC<DocumentModuleProps> = ({ onRequireLogin }) => {
                   {paginatedDocuments.map((doc) => (
                   <tr
                     key={doc.id}
-                    className="hover:bg-slate-50/80 transition-all duration-300 cursor-pointer hover:shadow-md hover:scale-[1.01]"
+                    className="hover:bg-slate-50/80 transition-all duration-300 cursor-pointer"
                     onClick={() => {
                       setSelectedDoc(doc);
                       setShowAIChat(false);
@@ -441,16 +491,16 @@ const DocumentModule: React.FC<DocumentModuleProps> = ({ onRequireLogin }) => {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="text-sm text-slate-600 group-hover:text-teal-700 transition-colors duration-300">{doc.school}</span>
+                      <span className="text-sm text-slate-600">{doc.school}</span>
                     </td>
-                    <td className="px-6 py-4 hidden md:table-cell">
+                    <td className="px-6 py-4 hidden lg:table-cell">
                       <div className="flex items-center gap-2 group">
                         <img
                           src={doc.uploaderAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(doc.uploader || 'U')}&background=0d9488&color=fff`}
-                          className="w-6 h-6 rounded-full group-hover:scale-110 transition-transform duration-300"
+                          className="w-6 h-6 rounded-full"
                           alt=""
                         />
-                        <span className="text-xs text-slate-600 font-medium group-hover:text-teal-700 transition-colors duration-300">{doc.uploader}</span>
+                        <span className="text-xs text-slate-600 font-medium">{doc.uploader}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -468,6 +518,7 @@ const DocumentModule: React.FC<DocumentModuleProps> = ({ onRequireLogin }) => {
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
                         <button
+                          aria-label="Xem tài liệu"
                           className="p-2 text-slate-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-all"
                           onClick={() => {
                             setSelectedDoc(doc);
@@ -490,7 +541,7 @@ const DocumentModule: React.FC<DocumentModuleProps> = ({ onRequireLogin }) => {
 
       {/* Document Detail Modal - render qua Portal để luôn nằm trên sidebar/header */}
       {selectedDoc && createPortal(
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center md:p-4">
           {/* Overlay: mờ nhẹ phía sau modal */}
           <div
             className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
@@ -502,33 +553,11 @@ const DocumentModule: React.FC<DocumentModuleProps> = ({ onRequireLogin }) => {
             aria-hidden="true"
           />
 
-          {/* Modal Container - FIXED HEIGHT 85vh, nằm trên overlay */}
-          <div
-            className="relative z-10"
-            style={{
-              background: 'white',
-              width: '100%',
-              maxWidth: '1280px',
-              height: '85vh',
-              borderRadius: '2.5rem',
-              overflow: 'hidden',
-              display: 'flex',
-              flexDirection: 'row',
-              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)'
-            }}
-          >
+          {/* Modal Container - FULL SCREEN ON MOBILE, 85vh on desktop */}
+          <div className="relative z-10 bg-white w-full md:max-w-[1280px] h-full md:h-[85vh] md:rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col md:flex-row">
 
             {/* Left - PDF Preview - TAKES UP REMAINING SPACE */}
-            <div
-              style={{
-                flex: 1,
-                display: 'flex',
-                flexDirection: 'column',
-                background: '#f1f5f9',
-                overflow: 'hidden',
-                minHeight: 0
-              }}
-            >
+            <div className="flex-1 flex flex-col bg-slate-100 overflow-hidden min-h-0">
               {/* Header - FIXED HEIGHT */}
               <div
                 style={{
@@ -593,18 +622,8 @@ const DocumentModule: React.FC<DocumentModuleProps> = ({ onRequireLogin }) => {
               </div>
             </div>
 
-            {/* Right - Sidebar - FIXED WIDTH, FULL HEIGHT */}
-            <div
-              style={{
-                width: '400px',
-                background: 'white',
-                borderLeft: '1px solid #e2e8f0',
-                display: 'flex',
-                flexDirection: 'column',
-                overflow: 'hidden',
-                minHeight: 0
-              }}
-            >
+            {/* Right - Sidebar - Full width on mobile (stacked), 400px on desktop */}
+            <div className="w-full md:w-[400px] bg-white border-t md:border-t-0 md:border-l border-slate-200 flex flex-col overflow-hidden min-h-0 max-h-[50vh] md:max-h-none">
               {showAIChat ? (
                 /* AI Chat View - FULL HEIGHT CONTAINER */
                 <div

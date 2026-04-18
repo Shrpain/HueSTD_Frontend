@@ -1,6 +1,6 @@
 
-import React, { useState, useRef, useEffect } from 'react';
-import { Search, Bell, Menu, Check, FileText, MessageSquare, Award, Clock, LogIn } from 'lucide-react';
+import React, { useState } from 'react';
+import { Search, Menu, LogIn, X } from 'lucide-react';
 import { User } from '../types';
 import NotificationBell from './NotificationBell';
 
@@ -13,17 +13,30 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ user, isLoggedIn, onMenuClick, onProfileClick, onShowAuth }) => {
+  const [showMobileSearch, setShowMobileSearch] = useState(false);
+
   return (
-    <header className="h-16 bg-white border-b border-slate-100 px-4 md:px-8 flex items-center justify-between sticky top-0 z-30">
-      <div className="flex items-center gap-4 flex-1">
+    <header className="h-14 md:h-16 bg-white/95 backdrop-blur-sm border-b border-slate-100 px-3 md:px-8 flex items-center justify-between sticky top-0 z-30">
+      {/* Left: Menu + Logo (mobile) / Search (desktop) */}
+      <div className="flex items-center gap-2 md:gap-4 flex-1 min-w-0">
         <button
           onClick={onMenuClick}
-          className="md:hidden p-2 text-slate-500 hover:bg-slate-50 rounded-xl transition-all duration-200 hover:scale-110 active:scale-95"
+          aria-label="Mở menu"
+          className="md:hidden p-2 text-slate-500 hover:bg-slate-50 rounded-xl transition-all duration-200 active:scale-95 shrink-0"
         >
           <Menu size={22} />
         </button>
 
-        <div className="relative max-w-sm w-full hidden sm:block group">
+        {/* Mobile logo */}
+        <div className="md:hidden flex items-center gap-2 min-w-0">
+          <div className="w-8 h-8 bg-teal-600 rounded-lg flex items-center justify-center text-white font-black shadow-md shadow-teal-100 shrink-0">
+            H
+          </div>
+          <span className="text-lg font-black text-teal-700 tracking-tight truncate">HueSTD</span>
+        </div>
+
+        {/* Desktop search */}
+        <div className="relative max-w-sm w-full hidden md:block group">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-hover:text-teal-500 transition-colors duration-300" size={16} />
           <input
             type="text"
@@ -33,45 +46,78 @@ const Header: React.FC<HeaderProps> = ({ user, isLoggedIn, onMenuClick, onProfil
         </div>
       </div>
 
-      <div className="flex items-center gap-2 md:gap-4">
+      {/* Right: Actions */}
+      <div className="flex items-center gap-1 md:gap-4 shrink-0">
+        {/* Mobile search toggle */}
+        <button
+          onClick={() => setShowMobileSearch(true)}
+          aria-label="Tìm kiếm"
+          className="md:hidden p-2 text-slate-500 hover:bg-slate-50 rounded-xl transition-all active:scale-95"
+        >
+          <Search size={20} />
+        </button>
+
         {isLoggedIn && user ? (
           <>
-            <div className="hidden lg:flex flex-col items-end shrink-0 group cursor-default">
-              <span className="text-[13px] font-black text-teal-600 group-hover:text-teal-700 transition-colors duration-300">
+            <div className="hidden lg:flex flex-col items-end shrink-0 cursor-default">
+              <span className="text-[13px] font-black text-teal-600">
                 {user.points} điểm
               </span>
-              <span className="text-[10px] text-slate-400 uppercase font-black tracking-widest group-hover:text-teal-500 transition-colors duration-300">{user.badge}</span>
+              <span className="text-[10px] text-slate-400 uppercase font-black tracking-widest">{user.badge}</span>
             </div>
-
 
             <NotificationBell />
 
             <button
               onClick={onProfileClick}
-              className="flex items-center gap-3 pl-4 border-l border-slate-100 hover:opacity-80 transition-all duration-300 active:scale-95 hover:bg-slate-50 rounded-xl p-2 -ml-2"
+              aria-label="Hồ sơ"
+              className="flex items-center gap-2 md:gap-3 md:pl-4 md:border-l border-slate-100 hover:opacity-80 transition-all duration-300 active:scale-95 hover:bg-slate-50 rounded-xl p-1.5 md:p-2"
             >
-              <img src={user.avatar} className="w-9 h-9 rounded-full border-2 border-slate-50 shadow-sm object-cover hover:scale-110 transition-transform duration-300" alt="Profile" />
-              <span className="hidden sm:inline text-[13px] font-bold text-slate-700 hover:text-teal-600 transition-colors duration-300">Hồ sơ</span>
+              <img src={user.avatar} className="w-8 h-8 md:w-9 md:h-9 rounded-full border-2 border-slate-50 shadow-sm object-cover" alt="Profile" />
+              <span className="hidden md:inline text-[13px] font-bold text-slate-700 hover:text-teal-600 transition-colors duration-300">Hồ sơ</span>
             </button>
           </>
         ) : (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 md:gap-2">
             <button
               onClick={onShowAuth}
-              className="hidden sm:flex items-center gap-2 px-4 py-2 text-[13px] font-bold text-slate-600 hover:bg-slate-50 rounded-xl transition-all duration-300 hover:scale-105 active:scale-95"
+              className="hidden md:flex items-center gap-2 px-4 py-2 text-[13px] font-bold text-slate-600 hover:bg-slate-50 rounded-xl transition-all duration-300 active:scale-95"
             >
               Đăng ký
             </button>
             <button
               onClick={onShowAuth}
-              className="flex items-center gap-2 px-6 py-2 bg-teal-600 text-white text-[13px] font-black rounded-xl hover:bg-teal-700 shadow-lg shadow-teal-100 transition-all duration-300 hover:shadow-teal-300 hover:shadow-xl hover:-translate-y-1 active:scale-95"
+              className="flex items-center gap-1.5 md:gap-2 px-3 md:px-6 py-2 bg-teal-600 text-white text-xs md:text-[13px] font-black rounded-xl hover:bg-teal-700 shadow-md md:shadow-lg shadow-teal-100 transition-all duration-300 active:scale-95"
             >
-              <LogIn size={16} className="group-hover:animate-pulse" />
-              Đăng nhập
+              <LogIn size={16} />
+              <span className="hidden xs:inline">Đăng nhập</span>
+              <span className="xs:hidden">Vào</span>
             </button>
           </div>
         )}
       </div>
+
+      {/* Mobile search overlay */}
+      {showMobileSearch && (
+        <div className="md:hidden absolute inset-0 bg-white flex items-center gap-2 px-3 z-40 animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="relative flex-1">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+            <input
+              autoFocus
+              type="text"
+              placeholder="Tìm tài liệu, bài viết..."
+              className="w-full bg-slate-50 border border-slate-100 rounded-full py-2.5 pl-10 pr-4 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none placeholder:text-slate-400"
+            />
+          </div>
+          <button
+            onClick={() => setShowMobileSearch(false)}
+            aria-label="Đóng tìm kiếm"
+            className="p-2 text-slate-500 hover:bg-slate-50 rounded-xl active:scale-95"
+          >
+            <X size={20} />
+          </button>
+        </div>
+      )}
     </header>
   );
 };

@@ -79,28 +79,29 @@ const AuthModule: React.FC<AuthModuleProps> = ({ onClose, onLoginSuccess }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-4 overflow-y-auto">
       <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-300" onClick={onClose} />
 
-      <div className="relative bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
-        <div className="absolute top-6 right-6 z-10">
+      <div className="relative bg-white w-full max-w-md sm:rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 min-h-screen sm:min-h-0 flex flex-col">
+        <div className="absolute top-4 sm:top-6 right-4 sm:right-6 z-10">
           <button
             onClick={onClose}
-            className="p-2 bg-slate-50 hover:bg-slate-100 text-slate-400 rounded-xl transition-colors"
+            aria-label="Đóng"
+            className="p-2 bg-slate-50 hover:bg-slate-100 text-slate-400 rounded-xl transition-colors active:scale-95"
           >
             <X size={20} />
           </button>
         </div>
 
-        <div className="p-8 md:p-10">
-          <div className="text-center space-y-2 mb-8">
-            <div className="w-12 h-12 bg-teal-600 rounded-2xl flex items-center justify-center text-white font-black mx-auto shadow-xl shadow-teal-100 mb-4 text-xl">
+        <div className="p-6 sm:p-8 md:p-10 flex-1">
+          <div className="text-center space-y-2 mb-6 md:mb-8">
+            <div className="w-12 h-12 bg-teal-600 rounded-2xl flex items-center justify-center text-white font-black mx-auto shadow-xl shadow-teal-100 mb-3 md:mb-4 text-xl">
               H
             </div>
-            <h2 className="text-3xl font-black text-slate-800">
+            <h2 className="text-2xl md:text-3xl font-black text-slate-800 text-balance">
               {mode === 'login' ? 'Chào mừng trở lại!' : 'Tham gia HueSTD'}
             </h2>
-            <p className="text-slate-500 font-medium">
+            <p className="text-sm md:text-base text-slate-500 font-medium text-pretty">
               {mode === 'login'
                 ? 'Đăng nhập để tiếp tục kết nối cùng sinh viên Huế'
                 : 'Tạo tài khoản để bắt đầu chia sẻ và học tập ngay'}

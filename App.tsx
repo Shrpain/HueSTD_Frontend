@@ -10,6 +10,7 @@ import AdminModule from './components/AdminModule';
 import AdminLayout from './components/admin/AdminLayout';
 import ProfileModule from './components/ProfileModule';
 import AuthModule from './components/AuthModule';
+import MobileBottomNav from './components/MobileBottomNav';
 
 // Lắng nghe sự kiện auth-toast (sau đăng nhập Google) và xử lý lỗi OAuth từ URL
 const AuthToastListener: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -165,14 +166,22 @@ const AppContent: React.FC = () => {
           onProfileClick={() => isAuthenticated ? handleTabChange(AppTab.PROFILE) : setShowAuthModal(true)}
           onShowAuth={() => setShowAuthModal(true)}
         />
-        <main className="flex-1 p-4 md:p-6 overflow-y-auto max-w-7xl mx-auto w-full">
+        <main className="flex-1 p-3 sm:p-4 md:p-6 overflow-y-auto max-w-7xl mx-auto w-full pb-24 md:pb-6">
           {renderContent()}
         </main>
 
-        <footer className="p-4 text-center text-slate-400 text-sm border-t bg-white">
+        <footer className="hidden md:block p-4 text-center text-slate-400 text-sm border-t bg-white">
           &copy; 2024 HueSTD - Nền tảng sinh viên Thừa Thiên Huế
         </footer>
       </div>
+
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav
+        activeTab={activeTab}
+        setActiveTab={handleTabChange}
+        isLoggedIn={isAuthenticated}
+        onShowAuth={() => setShowAuthModal(true)}
+      />
     </div>
   );
 };
