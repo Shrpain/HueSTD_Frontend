@@ -8,6 +8,94 @@ Backend Render hiện tại:
 https://huestd-backend.onrender.com
 ```
 
+Frontend Vercel hiện tại:
+
+```text
+https://hue-std-frontend-r8yetzohx-ds-projects-e52d8efd.vercel.app
+```
+
+## Cấu Hình Nhanh Cho Domain Hiện Tại
+
+Dùng các giá trị dưới đây để copy/paste vào dashboard.
+
+### Supabase Auth
+
+Vào:
+
+```text
+Supabase Dashboard -> Authentication -> URL Configuration
+```
+
+Đặt `Site URL`:
+
+```text
+https://hue-std-frontend-r8yetzohx-ds-projects-e52d8efd.vercel.app
+```
+
+Thêm vào `Redirect URLs`:
+
+```text
+https://hue-std-frontend-r8yetzohx-ds-projects-e52d8efd.vercel.app/**
+http://localhost:3000/**
+```
+
+Nếu Supabase không nhận `/**`, thêm các dòng cụ thể:
+
+```text
+https://hue-std-frontend-r8yetzohx-ds-projects-e52d8efd.vercel.app/
+https://hue-std-frontend-r8yetzohx-ds-projects-e52d8efd.vercel.app/*
+http://localhost:3000/
+http://localhost:3000/*
+```
+
+### Google Cloud OAuth
+
+Vào:
+
+```text
+Google Cloud Console -> APIs & Services -> Credentials -> OAuth 2.0 Client IDs
+```
+
+Trong `Authorized redirect URIs`, phải có:
+
+```text
+https://oubkbvypiabgfulnhsnd.supabase.co/auth/v1/callback
+```
+
+### Render Backend CORS
+
+Vào:
+
+```text
+Render Dashboard -> huestd-backend -> Environment
+```
+
+Thêm hoặc cập nhật:
+
+```text
+ALLOWED_ORIGINS=https://hue-std-frontend-r8yetzohx-ds-projects-e52d8efd.vercel.app,http://localhost:3000
+```
+
+Sau đó redeploy backend Render.
+
+### Vercel Frontend Env
+
+Vào:
+
+```text
+Vercel Dashboard -> Project -> Settings -> Environment Variables
+```
+
+Cần có:
+
+```text
+VITE_API_BASE_URL=/api
+VITE_SUPABASE_URL=https://oubkbvypiabgfulnhsnd.supabase.co
+VITE_SUPABASE_ANON_KEY=<supabase-anon-public-key>
+```
+
+Sau đó redeploy frontend Vercel.
+
 ## 1. Repo Frontend
 
 Repo GitHub frontend riêng:
