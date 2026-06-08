@@ -1,0 +1,10 @@
+{
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "https://huestd-backend.onrender.com/api/$1" },
+    { "source": "/hubs/(.*)", "destination": "https://huestd-backend.onrender.com/hubs/$1" },
+    { "source": "/(.*)", "destination": "/" }
+  ],
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "installCommand": "npm install"
+}
