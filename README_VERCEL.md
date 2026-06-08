@@ -208,6 +208,123 @@ AllowedOrigins__0=https://your-frontend-name.vercel.app
 
 Redeploy backend sau khi đổi biến môi trường.
 
+### Đăng nhập Google trên Vercel lại quay về localhost
+
+Nguyên nhân thường gặp: Supabase Auth vẫn để `Site URL` là `http://localhost:3000`, hoặc domain Vercel chưa được thêm vào `Redirect URLs`.
+
+Code frontend hiện lấy domain đang mở bằng `window.location.origin`, nên nếu bấm Google Login trên Vercel thì frontend sẽ yêu cầu Supabase quay lại domain Vercel. Nếu vẫn quay về localhost, cần sửa cấu hình dashboard.
+
+#### Bước 1: Lấy domain Vercel thật
+
+Vào Vercel project frontend và lấy domain production, ví dụ:
+
+```text
+https://huestd-frontend.vercel.app
+```
+
+Trong các bước dưới đây, thay `https://your-frontend-name.vercel.app` bằng domain thật đó.
+
+#### Bước 2: Sửa Supabase Auth URL Configuration
+
+Vào:
+
+```text
+Supabase Dashboard -> Authentication -> URL Configuration
+```
+
+Đặt `Site URL`:
+
+```text
+https://your-frontend-name.vercel.app
+```
+
+Thêm vào `Redirect URLs`:
+
+```text
+https://your-frontend-name.vercel.app/**
+http://localhost:3000/**
+```
+
+Nếu Supabase không nhận `/**`, thêm các dòng cụ thể:
+
+```text
+https://your-frontend-name.vercel.app/
+https://your-frontend-name.vercel.app/*
+http://localhost:3000/
+http://localhost:3000/*
+```
+
+#### Bước 3: Kiểm tra Google Cloud OAuth Client
+
+Vào:
+
+```text
+Google Cloud Console -> APIs & Services -> Credentials -> OAuth 2.0 Client IDs
+```
+
+Trong `Authorized redirect URIs`, phải có callback của Supabase:
+
+```text
+https://oubkbvypiabgfulnhsnd.supabase.co/auth/v1/callback
+```
+
+Không cần thêm Vercel URL vào Google redirect URI, vì Google callback về Supabase trước, sau đó Supabase mới redirect về frontend.
+
+#### Bước 4: Sửa Render CORS cho domain Vercel
+
+Vào:
+
+```text
+Render Dashboard -> huestd-backend -> Environment
+```
+
+Thêm một trong hai kiểu cấu hình sau.
+
+Kiểu khuyến nghị:
+
+```text
+ALLOWED_ORIGINS=https://your-frontend-name.vercel.app,http://localhost:3000
+```
+
+Hoặc kiểu array:
+
+```text
+AllowedOrigins__0=https://your-frontend-name.vercel.app
+AllowedOrigins__1=http://localhost:3000
+```
+
+Sau đó redeploy backend Render.
+
+#### Bước 5: Kiểm tra Vercel Environment Variables
+
+Vào:
+
+```text
+Vercel Dashboard -> Project -> Settings -> Environment Variables
+```
+
+Cần có:
+
+```text
+VITE_API_BASE_URL=/api
+VITE_SUPABASE_URL=https://oubkbvypiabgfulnhsnd.supabase.co
+VITE_SUPABASE_ANON_KEY=<supabase-anon-public-key>
+```
+
+Sau đó redeploy frontend Vercel.
+
+#### Bước 6: Test lại
+
+Mở app bằng domain Vercel, không mở localhost:
+
+```text
+https://your-frontend-name.vercel.app
+```
+
+Bấm Google Login. Kết quả đúng là Google login xong quay lại chính domain Vercel và app đăng nhập ngay.
+
+Nếu vẫn quay về localhost, kiểm tra lại `Supabase -> Authentication -> URL Configuration`, vì gần như chắc chắn `Site URL` hoặc `Redirect URLs` vẫn còn thiếu domain Vercel.
+
 ### Đăng nhập thành công nhưng refresh bị mất session
 
 Frontend đang dùng cookie HttpOnly từ backend. Khi deploy production, nếu cookie không lưu được, kiểm tra backend cookie settings.
